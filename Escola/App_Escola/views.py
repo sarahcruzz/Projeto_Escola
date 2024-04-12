@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from hashlib import sha256
 from .models import Professor, Turma, Atividade
 from django.db import connection, transaction
@@ -130,8 +130,37 @@ def confirmar_cadastro(request):
 
         mensagem = "OLÁ PROFESSOR " + nome + ", SEJA BEM VINDO!"
         return HttpResponse(mensagem)
+    
+def cad_turma(request, id_professor):
+    usuario_logado = Professor.objects.filter(id=id_professor).values("nome", "id")
+    usuario_logado = usuario_logado[0]
+    usuario_logado = usuario_logado['nome']
+    #print (usuario_logado, "Usuario logado em cad_cliente")
+    return render(request, 'Cad_Turma.html', {'usuario_logado': usuario_logado, 'id_logado': id_professor})
 
+def salvar_turma_nova(request):
+    if request.method == 'POST':
+        nome_turma = request.POST.get('nome_turma')
+        id_professor = request.POST.get('id_professor')
+        professor = Professor.objects.get(id=id_professor)
+        grava_turma = Turma(
+            nome_turma=nome_turma,
+            id_professor=professor
+        )
+        grava_turma.save()
+        messages.info(request, 'Turma ' + nome_turma + ' cadastrado com sucesso.')
 
+        # Redirecionar para uma nova url após a gravação bem-sucedida
+        return redirect('lista_turma', id_professor=id_professor)
+    
+def lista_turma(request, id_professor):
+    dados_professor = Professor.objects.filter(id=id_professor).values("nome", "id")
+    usuario_logado = dados_professor[0]
+    usuario_logado = usuario_logado['nome']
+    id_logado = dados_professor[0]
+    id_logado = id_logado['id']
+    turmas_do_professor = Turma.objects.filter(id_professor=id_logado)
+    return render(request, 'Cons_Turma_Lista.html', {'usuario_logado': usuario_logado, 'turmas_do_professor': turmas_do_professor, 'id_logado': id_logado})
 
 
 
