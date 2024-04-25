@@ -1,158 +1,131 @@
-from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from hashlib import sha256
 from .models import Professor, Turma, Atividade
 from django.db import connection, transaction
-from django.contrib import messages # biblioteca de mensagens do Django
+from django.contrib import messages
+from django.http import HttpResponse
 
 def initial_population():
-
-    print("Vou Popular")
-
-    cursor = connection.cursor()
-
-    # Popular Tabela Professor
-    senha = "123456" # senha inicial para todos os usuários
-    senha_armazenar = sha256(senha.encode()).hexdigest()
-    # Montamos aqui nossa intrução SQL
-    insert_sql_professor = "INSERT INTO App_Escola_professor (nome, email, senha) VALUES"
-    insert_sql_professor = insert_sql_professor + "('Prof. Barak Obama', 'barak.obama@gmail.com', '" + senha_armazenar + "'),"
-    insert_sql_professor = insert_sql_professor + "('Profa. Angela Merkel', 'angela.merkel@gmail.com', '" + senha_armazenar + "'),"
-    insert_sql_professor = insert_sql_professor + "('Prof. Xi Jinping', 'xi.jinping@gmail.com', '" + senha_armazenar + "')"
-
-    cursor.execute(insert_sql_professor)
-    transaction.atomic() # Necessário commit para insert e update
-    # Fim da População da tabela Professor
-
-    #----------------------------------------------------------------------------------------
-
-    # Popular Tabela Turma
-    # Montamos aqui nossa instrução SQL
-    insert_sql_turma = "INSERT INTO App_Escola_turma (nome_turma, id_professor_id) VALUES"
-    insert_sql_turma = insert_sql_turma + "('1° Semestre - Desenvolvimento de Sistemas', 1), "
-    insert_sql_turma = insert_sql_turma + "('2° Semestre - Desenvolvimento de Sistemas', 2), "
-    insert_sql_turma = insert_sql_turma + "('3° Semestre - Desenvolvimento de Sistemas', 3) "
-
-    cursor.execute(insert_sql_turma)
-    transaction.atomic() # Necessário commit para insert e update
-
-    # Fim da população da tabela Turma
+    print("vou pular")
     
-    #-----------------------------------------------------------------------------------------
-
-    # Popular Tabela Atividade
-    # Montamos aqui nossa instrução SQL
-    insert_sql_atividade = "INSERT INTO App_Escola_atividade (nome_atividade, id_turma_id) VALUES"
-    insert_sql_atividade = insert_sql_atividade + "('Apresentar Fundamentos de Programação', 1), "
-    insert_sql_atividade = insert_sql_atividade + "('Apresentar FrameWork Django', 2), "
-    insert_sql_atividade = insert_sql_atividade + "('Apresentar conceitos de Gerenciamento de Projetos ', 3) "
-
+    cursor = connection.cursor()
+    
+    senha = "123456"
+    senha_armazenar = sha256(senha.encode()).hexdigest()
+    
+    insert_sql_professor = "INSERT INTO App_Escola_professor (nome,email,senha) VALUES"
+    insert_sql_professor = insert_sql_professor + "('Prof. Barak Obama', 'barak.obama@gmail.com', '" + senha_armazenar + "' ),"
+    insert_sql_professor = insert_sql_professor + "('Profa. Angela Merkel', 'angela.merkel@gmail.com', '" + senha_armazenar + "' ),"
+    insert_sql_professor = insert_sql_professor + "('Prof. Xi Jinping', 'xi.jinping@gmail.com', '" + senha_armazenar + "' )"
+    
+    cursor.execute(insert_sql_professor)
+    transaction.atomic() #seria como um commit para o insert e update
+    
+    #tabela Turma
+    insert_sql_turma = "INSERT INTO App_Escola_turma(nome_turma,id_professor_id) VALUES"
+    insert_sql_turma = insert_sql_turma + "('1o semestre - Desenvolvimento de Sistemas', 1),"
+    insert_sql_turma = insert_sql_turma + "('2o semestre - Desenvolvimento de Sistemas', 2),"
+    insert_sql_turma = insert_sql_turma + "('3o semestre - Desenvolvimento de Sistemas', 3)"
+    
+    cursor.execute(insert_sql_turma)
+    transaction.atomic()
+    
+    #tabela de atividade
+    insert_sql_atividade = "INSERT INTO App_Escola_atividade (nome_atividade,id_turma_id) VALUES"
+    insert_sql_atividade = insert_sql_atividade + "('Apresentar Fundamentos de programação', 1),"
+    insert_sql_atividade = insert_sql_atividade + "('Apresentar FrameWork Django', 2),"
+    insert_sql_atividade = insert_sql_atividade + "('Apresentar conceito de Gerenciamento de Projetos', 3)"
+    
     cursor.execute(insert_sql_atividade)
-    transaction.atomic() # Necessário commit para insert e update
-
-    # Fim da população da tabela Atividade
-
-    print("Populei")
+    transaction.atomic()
+    
+    print("funfa")
+    
 
 def abre_index(request):
     # return render(request, 'index.html')
-    # mensagem = " OLÁ TURMA, MUITO BOM DIA!"
-    # return HttpResponse(mensagem)
-
-    # query set Tipos de Look Up
-    # nome__exact='SS' - tem que ser exatamento igual
-    # nome__contains='H' - contem o H maiusculo
-    # nome__icontains='H' - ignora se maiúsculo ou minúsculo
-    # nome startswith='M' - traz o que começa com a letra M ou sequencia de letras
-    # nome istartswith='M' - traz o que começa com a letra ignorando se maiusculo ou minusculo ou sequencia de letras
-    # nome__endswith='a' - traz o que termina com a letra a minusculo ou sequencia de letras
-    # nome__iendswith='a' - traz o que termina com a letra a ignorando maiusculo ou minusculo
-    # nome__ind=['Michael', 'Obama']) - traz somente os nomes que estão na lista
-    #Pode ser feito uma composição 'and' utilizando , (virgula entre os campos) ou 'or' utilizando | (pipe entre os campos)  
-
     dado_pesquisa = 'Obama'
-
-    verifica_populado = Professor.objects.filter(nome__icontains=dado_pesquisa)
-    # verifica_populado = Professor.objects.filter(nome='Prof. Barak Obama')
-
+    
+    verifica_populado = Professor.objects.filter(nome__icontains = dado_pesquisa)
+    
     if len(verifica_populado) == 0:
-        print("Não está populado")
+        print("não esta populado")
         initial_population()
     else:
-        print("Achei Obama", verifica_populado)
-
+        print("Achei o Obama", verifica_populado)
+    
     return render(request, 'login.html')
+        
 
 def enviar_login(request):
-
-    if request.method == "POST":
+    
+    if (request.method == 'POST'):
         email = request.POST.get('email')
         senha = request.POST.get('senha')
         senha_criptografada = sha256(senha.encode()).hexdigest()
         dados_professor = Professor.objects.filter(email=email).values("nome", "senha", "id")
-        print("Dados do Professor ", dados_professor)
-
-        #if len(dados_professor) > 0:
+        print(dados_professor)
+        print("dados do professor", dados_professor)
+        
         if dados_professor:
             senha = dados_professor[0]
             senha = senha['senha']
             usuario_logado = dados_professor[0]
             usuario_logado = usuario_logado['nome']
-        
-            if senha == senha_criptografada:
-                # Se logou corretamente, traz as turmas do professor
-                # Para isso instanciamos o model turmas do professor
+            if (senha == senha_criptografada):
+                #se logou corretamente, traz as turmas do professor
+                #para isso estanciamos o model turmas do professor
                 id_logado = dados_professor[0]
                 id_logado = id_logado['id']
                 turmas_do_professor = Turma.objects.filter(id_professor=id_logado)
-                print("Turma do Professor ", turmas_do_professor)
-                return render(request, 'Cons_Turma_Lista.html', {'usuario_logado': usuario_logado, 'turmas_do_professor': turmas_do_professor, 'id_logado': id_logado})
+                print("Turma do professor", turmas_do_professor)
+                return render(request, 'Cons_Turma_Lista.html', {'usuario_logado':usuario_logado,
+                                                                 'turmas_do_professor': turmas_do_professor,
+                                                                 "id_logado": id_logado})
             else:
-                messages.info(request, "Usuário ou senha incorretos. Tente novamente.")
+                messages.info(request, 'Usuario ou senha incorretos, Tente noamente')
                 return render(request, 'login.html')
-        
-        messages.info(request, "Olá " + email + ", seja bem-vindo! Percebemos que você é novo por aqui. Complete seu cadastro.")
-        return render(request, 'cadastro.html', {'login': email})
-    
+            
+    messages.info(request, "Olá "  + email + ", seja bem vindo! Percebmos que voce é novo aqui. Complete o seu cadastro")
+    return render(request, 'cadastro.html',{'login':email})
+
 def confirmar_cadastro(request):
-    if request.method == 'POST':
+    if(request.method == 'POST'):
         nome = request.POST.get('nome')
-        email = request.POST.get('login')
+        email = request.POST.get('email')
         senha = request.POST.get('senha')
         senha_criptografada = sha256(senha.encode()).hexdigest()
-
+        
         grava_professor = Professor(
             nome=nome,
             email=email,
             senha=senha_criptografada
         )
         grava_professor.save()
-
-        mensagem = "OLÁ PROFESSOR " + nome + ", SEJA BEM VINDO!"
+        
+        mensagem = "Olá Professor" + nome + "seja bem vindo"
         return HttpResponse(mensagem)
-    
+
 def cad_turma(request, id_professor):
     usuario_logado = Professor.objects.filter(id=id_professor).values("nome", "id")
     usuario_logado = usuario_logado[0]
     usuario_logado = usuario_logado['nome']
-    #print (usuario_logado, "Usuario logado em cad_cliente")
-    return render(request, 'Cad_Turma.html', {'usuario_logado': usuario_logado, 'id_logado': id_professor})
+    return render(request, 'Cad_turma.html', {'usuario_logado': usuario_logado, 'id_logado':id_professor})
 
 def salvar_turma_nova(request):
-    if request.method == 'POST':
+    if (request.method == 'POST'):
         nome_turma = request.POST.get('nome_turma')
         id_professor = request.POST.get('id_professor')
         professor = Professor.objects.get(id=id_professor)
-        grava_turma = Turma(
-            nome_turma=nome_turma,
-            id_professor=professor
+        grava_turma =Turma(
+            nome_turma = nome_turma,
+            id_professor = professor
         )
+        
         grava_turma.save()
-        messages.info(request, 'Turma ' + nome_turma + ' cadastrado com sucesso.')
-
-        # Redirecionar para uma nova url após a gravação bem-sucedida
+        messages.info(request, 'Turma' + nome_turma + 'cadastrado com sucesso.')
         return redirect('lista_turma', id_professor=id_professor)
-    
+
 def lista_turma(request, id_professor):
     dados_professor = Professor.objects.filter(id=id_professor).values("nome", "id")
     usuario_logado = dados_professor[0]
@@ -160,10 +133,65 @@ def lista_turma(request, id_professor):
     id_logado = dados_professor[0]
     id_logado = id_logado['id']
     turmas_do_professor = Turma.objects.filter(id_professor=id_logado)
-    return render(request, 'Cons_Turma_Lista.html', {'usuario_logado': usuario_logado, 'turmas_do_professor': turmas_do_professor, 'id_logado': id_logado})
+    return render(request, 'Cons_Turma_Lista.html',
+                  {'usuario_logado':usuario_logado, 'turmas_do_professor':turmas_do_professor,
+                   'id_logado':id_logado})
+    
+# def ver_atividades(request):
+#     id_turma = request.GET('id')
+#     dados_turma = Turma.objects.filter(id=id_turma).values("nome_turma", "id")
+#     turma_logada = dados_turma[0]
+#     turma_logada = turma_logada['nome_turma']
+#     id_turma_logado = dados_turma[0]
+#     id_turma_logado = id_turma_logado['id']
+#     lista_atividade = Atividade.objects.filter(id_turma=id_turma_logado)
+#     return render(request, 'Lista_Atividade',
+#                   {'turma_logada': turma_logada, 'lista_atividade': lista_atividade,
+#                    'id_turma':id_turma})
+
+def ver_atividades(request,id_turma):
+    print(f'get do id{id_turma}')
+    dados_turma = Turma.objects.filter(id=id_turma).values("nome_turma", "id")
+    print(dados_turma)
+    turma_logada = dados_turma[0]
+    turma_logada = turma_logada['nome_turma']
+    id_turma_logado = dados_turma[0]
+    id_turma_logado = id_turma_logado['id']
+    lista_atividade = Atividade.objects.filter(id_turma=id_turma_logado)
+    return render(request, 'Lista_Atividade.html',
+                  {'turma_logada': turma_logada, 'lista_atividade': lista_atividade,
+                   'id_turma':id_turma})
+ 
+def cad_atividade(request, id_turma):
+    turma_logada = Turma.objects.filter(id=id_turma).values("nome_turma", "id")
+    turma_logada = turma_logada[0]
+    turma_logada = turma_logada['nome']
+    return render(request, 'Lista_Atividade.html', {'turma_logada':turma_logada, 'id_logado':turma_logada})
+     
+def salvar_atividade(request):
+    if (request.method == 'POST'):
+        atividade_nome = request.POST.get('atividade_nome')
+        id_turma = request.POST.get('id_turma_logado')
+        print("cheguei aqui")
+        turma = Turma.objects.get(id=id_turma)
+        grava_atividade = Atividade(
+            nome_atividade = atividade_nome,
+            id_turma = turma
+        )
+       
+        grava_atividade.save()
+        messages.info(request, 'Atividade ' + atividade_nome + ' cadastrada com sucesso')
+        return redirect('ver_atividades/' + id_turma)
+
+def valida_excluir(request, id_turma):
+    id_professor = request.GET.get('id_professor')
+    turma = get_object_or_404(Turma, id=id_turma)
+    if Atividade.objects.filter(id_turma=turma.id):
+        messages.info(request, 'Turma' + turma.nome_turma + 'possui atividades cadastradas, não pode excluir')
+        return redirect('lista_turma', id_professor=id_professor)
+    turma.delete()
+    return redirect('lista_turma', id_professor=id_professor)
 
 
 
-
-
-
+# Create your views here.
