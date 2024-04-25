@@ -4,22 +4,23 @@
 <head>
     <link rel="stylesheet" type="text/css" href="{% static 'css/cad_turma.css' %}">
     <title>Programação Web Back End</title>
+    <link rel="stylesheet" href="../static/css/cad_list.css">
 </head>
-<header class="login">
-    <div class="fundo_menu">
-
-        <div class="nome_sistema">
-            Sistema de Apoio aos Professores
+<div class="superior">
+    <header class="login">
+        <div class="fundo_menu">
+            <div class="nome_sistema">
+                Sistema de Apoio aos Professores
+            </div>
         </div>
-    </div>
-</header>
-<nav class="menu">
-    <ul>
-        <li id="nome_logado"> Professor logado:<a href=""> {{usuario_logado}}  | </a></li>
-        <li><a href="../accounts/logout">SAIR</a></li>
-    </ul>
-</nav>
-
+    </header>
+    <nav class="menu">
+        <ul>
+            <li id="nome_logado"> Professor logado:<a href=""> {{usuario_logado}}  | </a></li>
+            <li><a href="/">SAIR</a></li>
+        </ul>
+    </nav>
+</div>
 <body>
     <div class="principal">
     <div class="container">
