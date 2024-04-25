@@ -65,16 +65,16 @@
             <tr>
                 <th>Numero</th>
                 <th>Atividades</th>
-                <th>Excluir</th>
-                <th>Visualizar</th>
+                <!-- <th>Excluir</th>
+                <th>Visualizar</th> -->
             </tr>
             
             {% for igs in lista_atividade %}
             <tr>
                 <td style="text-align:center">{{igs.id}} </td>
                 <td>{{igs.nome_atividade}}</td>
-                <td style="text-align:center"><a href="/valida_excluir/{{igs.id}}"><button id="botao-excluir">excluir</button></a></td>
-                <td style="text-align:center"><a href="/ver_atividades?id_turma={{igs.id}}"><button id="botao-visualizar">visualizar</button></a></td>
+                <!-- <td style="text-align:center"><a href="/valida_excluir/{{igs.id}}"><button id="botao-excluir">excluir</button></a></td>
+                <td style="text-align:center"><a href="/ver_atividades?id_turma={{igs.id}}"><button id="botao-visualizar">visualizar</button></a></td> -->
             </tr>
             {% endfor %}
 
