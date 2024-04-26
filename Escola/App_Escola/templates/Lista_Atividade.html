@@ -20,7 +20,6 @@
 
 <nav class="menu">
     <ul>
-       <li><a href="/cad_atividade/{{id_turma_logado}}">Cadastrar Atividade</a></li>
        <li> | Turma Logada: {{turma_logada}} | </a></li>
        <li><a href="/">SAIR</a></li>
     </ul>
@@ -46,13 +45,15 @@
         <input type="hidden"  name="turma_logada" id="turma_logada"  value="{{turma_logada}}" />
         <hr>
 
-        <form id="form" class="form" method="POST" action="{% url 'salvar_atividade' %}">{% csrf_token %}
+        <form id="form" class="form" method="POST" enctype="multipart/form-data" action="{% url 'salvar_atividade' %}">{% csrf_token %}
 
             <div class="form-content">
 
                 <input type="hidden"  name="id_turma_logado" id="id_turma_logado"  value="{{id_turma}}" />
                 <input type="text" id="atividade_nome" name="atividade_nome" value="" placeholder="Digite o nome da Atividade" />
-                <a>Nome deve ter no mínimo 3 caracteres</a>
+                <p style="font-size: 13px; margin: 0 0 10px 0;">Nome deve ter no mínimo 3 caracteres</p>
+                <input type="file" name="arquivo" id="arquivo" value="Caminho do arquivo">
+                
             </div>
             <div class="botoes">
                 <div class="botao_confirmar">
@@ -65,6 +66,7 @@
             <tr>
                 <th>Numero</th>
                 <th>Atividades</th>
+                <th>Arquivo</th>
                 <!-- <th>Excluir</th>
                 <th>Visualizar</th> -->
             </tr>
@@ -73,6 +75,13 @@
             <tr>
                 <td style="text-align:center">{{igs.id}} </td>
                 <td>{{igs.nome_atividade}}</td>
+                <td>
+                    {% if igs.arquivo %}
+                    <a href=../../{{igs.arquivo}}><i class="fa-regular fa-file"></i></a>
+                    {% endif %}
+                </td>
+
+
                 <!-- <td style="text-align:center"><a href="/valida_excluir/{{igs.id}}"><button id="botao-excluir">excluir</button></a></td>
                 <td style="text-align:center"><a href="/ver_atividades?id_turma={{igs.id}}"><button id="botao-visualizar">visualizar</button></a></td> -->
             </tr>

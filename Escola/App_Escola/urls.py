@@ -11,5 +11,6 @@ urlpatterns = [
     path ('ver_atividades/<int:id_turma>', views.ver_atividades, name='ver_atividades'),
     path('cad_atividade/<int:id_turma>', views.cad_atividade, name='cad_atividade'),
     path('salvar_atividade', views.salvar_atividade, name='salvar_atividade'),
-    path('valida_excluir/<int:id_turma>', views.valida_excluir, name='valida_excluir')
+    path('valida_excluir/<int:id_turma>', views.valida_excluir, name='valida_excluir'),
+    path('atividades_arquivos/<str:nome_arquivo>', views.exibir_arquivo, name='exibir_arquivo'),
 ]

@@ -4,6 +4,8 @@ from .models import Professor, Turma, Atividade
 from django.db import connection, transaction
 from django.contrib import messages
 from django.http import HttpResponse
+import os
+import mimetypes
 
 def initial_population():
     print("vou pular")
@@ -174,9 +176,12 @@ def salvar_atividade(request):
         id_turma = request.POST.get('id_turma_logado')
         print("cheguei aqui")
         turma = Turma.objects.get(id=id_turma)
+        arquivo = request.FILES.get('arquivo')
+        print(arquivo) # Obtém o arquivo enviado pelo formulário
         grava_atividade = Atividade(
             nome_atividade = atividade_nome,
-            id_turma = turma
+            id_turma = turma,
+            arquivo = arquivo # Associa o arquivo á atividade
         )
        
         grava_atividade.save()
@@ -192,6 +197,18 @@ def valida_excluir(request, id_turma):
     turma.delete()
     return redirect('lista_turma', id_professor=id_professor)
 
+def exibir_arquivo(request, nome_arquivo):
+    caminho_arquivo = os.path.join('atividades_arquivos/', nome_arquivo)
 
+    if os.path.exists(caminho_arquivo):
+        with open(caminho_arquivo, 'rb') as arquivo:
+            conteudo = arquivo.read()
 
-# Create your views here.
+        tipo_mimetype, _ = mimetypes.guess_type(caminho_arquivo)
+
+        resposta = HttpResponse(conteudo, content_type = tipo_mimetype)
+
+        resposta['Content-Disposition'] = 'inline; filename="' + nome_arquivo + '"'
+        return resposta
+    else:
+        return HttpResponse('Arquivo não encontrado', status=404)
