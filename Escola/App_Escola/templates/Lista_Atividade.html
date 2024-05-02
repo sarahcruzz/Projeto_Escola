@@ -32,6 +32,9 @@
     <div class="container">
         <section class="enquadramento">
             <h1> Atividades</h1>
+            <a href="{% url 'exportar-excel' %}" download>
+                <button>Exportar para Excel</button>
+            </a>
         </section>
          {% if messages %}
             <ul class="mensagem_do_servidor" style="background: #dad7cd; padding: 24px; text-align:center; color: #fff;">

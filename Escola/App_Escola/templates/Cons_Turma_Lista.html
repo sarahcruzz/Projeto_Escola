@@ -42,6 +42,9 @@
          {% endif %}
         <input type="hidden"  name="id_logado" id="id_logado"  value="{{id_logado}}" />
         <input type="hidden"  name="nome_logado" id="nome_logado"  value="{{usuario_logado}}" />
+        <a href="{% url 'exportar_excel_turma' %}" download>
+            <button>Exportar para Excel</button>
+        </a>
         <hr>
 
         <table>
