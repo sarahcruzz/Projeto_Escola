@@ -18,9 +18,12 @@
         </div>
 
         {% if user.is_authenticated %}
-        <div class="botao_login">
-            <a href="accounts/logout"><button class="btn btn_login">Logout</button></a>
-        </div>
+        <form id="form" class="form" method="post" action="accounts/logout/"> {% csrf_token %}
+            <div class="botao_login">
+                <button type="submit" class="btn btn_login">Logout</button>
+            </div>
+        </form>
+        
         {% else %}
         <div class="botao_login">
             <a href="accounts/login"><button class="btn btn_login">Login</button></a>
@@ -29,15 +32,11 @@
 
     </div>
 </header> 
-<header class="menu_principal">
-    
-</header>   
-
-
+<header class="menu_principal"></header>   
 
 <nav class="menu">
     <ul>
-
+        {% if user.is_authenticated %}
         <li><a href="">Cadastros</a>
             <ul>
                 <li><a href="">Professores</a></li>
